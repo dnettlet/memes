@@ -648,28 +648,28 @@ class RedSemantica:
             else:
                 if self.w.pos[doc_id1][i][1] in stopwordsVerbs:
                     candidatesSW.append(self.w.pos[doc_id1][i][1])
-        # Caso 1 y 2: hay candidatos entre los conceptos 1 y 2
+        # Case 1 and 2: there are candidates between concepts 1 and 2
         if len(candidates) != 0:
-            # Caso 1: un candidato
+            # Case 1: one candidate
             if len(candidates) == 1:
                 self.verbBetweenC[candidates[0]] = self.verbBetweenC.get(candidates[0],[])
                 self.verbBetweenC[candidates[0]].append((doc_id1))
                 return candidates[0]
-            # Caso 2: mas de un candidato
+            # Case 2: more than one candidate
             if len(candidates) > 1: 
-                candidate_freq ={} #En todo el doc
-                candidate_freq2 ={}#En un doc especifico
+                candidate_freq ={} #In the whole doc
+                candidate_freq2 ={}#In a specific doc
                 count=0
-                for candidate in candidates:#Para cada candidato (verbo) entre los conceptos c1 y c2.
+                for candidate in candidates:#For each candidate (verb) between concepts c1 and c2.
                     try:
-                        # Cantidad que se repite el candidato
+                        # Times that the candidate is repeated
                         candidate_freq[candidate] = len(self.verbs[candidate])
                         for e in self.verbs[candidate]: # self.verbs[verbo] === (docId, paragraphId, wordId)
                             if e[0]==doc_id1:
-                                count+=1 #Cuenta la frecuencia del verbo en un documento especificado
+                                count+=1 #Count the frequency of the verb in the specified document
                         candidate_freq2[candidate]=count 
-                        count = 0 #Reinicia count
-                    except:#Si no ecuentra candidatos, entonces busca candidatos del tipo stopwordVerb.
+                        count = 0 #Reinitialize count
+                    except:#If no candidates are found, then search for candidates of type stopwordVerb.
                         try:
                             candidate_freq[candidate] = len(self.stopwords[candidate])
                             for e in self.stopwords[candidate]:
@@ -677,20 +677,20 @@ class RedSemantica:
                                     count+=1
                             candidate_freq2[candidate]=count
                             count = 0
-                        except:#Si no encuentra en verbo en los stopwordVerb -> Verbo no es un verbo candidato. ver text_to_NN_VB_ST
-                            pass#El verbo entre conceptos no es tomado como verbo, segun la estructura de la oracion.
+                        except:#If cannot find verb in los stopwordVerb -> Verb is not a candidate verb. See text_to_NN_VB_ST
+                            pass#The verb between concepts is not taken as a verb, according to the structure of the oration.
                         
 
-                #CASO 1: frecuencia del verbo para todo el documento.
-                #retorna el mas frecuentes del texto completo.
+                #CASE 1: frequency of the verb for the whole document.
+                #returns the most frequent in the complete text.
                 seleccionado = sorted(candidate_freq.items(), reverse= True, key=lambda x: x[1])[0]#[0] #(verb, contador)
                 self.verbBetweenC[seleccionado[0]] = self.verbBetweenC.get(seleccionado[0],[])
                 self.verbBetweenC[seleccionado[0]].append((doc_id1))
                 return seleccionado[0]
-        #Caso 3: buscar verbo a la izq, 5 palabras, omitir stopwords
+        #Case 3: search for verb to the left, 5 words, omit stopwords
         else:
-            limite = 5 # limite, numero de palabras hacia atras (omitir stopwords)
-            count = 1 # retrocede, se resta al indice del concepto inicial i1.
+            limite = 5 # limit, number of words going backwards (omit stopwords)
+            count = 1 # retrocede, decrement initial concept index i1.
             verbo_aux = None
             while limite >= 1:
                 if not self.w.pos[doc_id1][i1-count][1] in stopwords:
