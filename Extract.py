@@ -1,3 +1,6 @@
+# Copyright (C) 2017  Héctor Beck-Fernandez(hbeck@uta.cl), David F. Nettleton (david.nettleton@upf.edu), Lorena Recalde, Diego Saez-Trumper, Alexis Barahona-Peñaranda
+# License: GNU GENERAL PUBLIC LICENSE v3.0   See LICENSE for the full license.
+
 from bs4 import BeautifulSoup
 import urllib2
 #import ho.pisa as pisa
@@ -14,7 +17,7 @@ class HtmlExtract:
         #self.url = url
         self.pages = pages#sorted(pages)
         self.divId = divId
-        #print self.pages #estan desordenados
+        #print self.pages #they are unordered
         #print "---"
         self.htmlFull2 = """ <style>
             @page {

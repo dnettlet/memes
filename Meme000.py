@@ -1,3 +1,6 @@
+# Copyright (C) 2017  Héctor Beck-Fernandez(hbeck@uta.cl), David F. Nettleton (david.nettleton@upf.edu), Lorena Recalde, Diego Saez-Trumper, Alexis Barahona-Peñaranda
+# License: GNU GENERAL PUBLIC LICENSE v3.0   See LICENSE for the full license.
+
 # -*- coding: cp1252 -*-
 #import matplotlib.pyplot as plt #UnUsed < ver linea 162
 from nltk import corpus
@@ -26,11 +29,11 @@ from Corpus.Corpus_en import corpus_en as corpus
 
 import time
 
-#APRIORI ALGORITMO
+#APRIORI ALGORITHM
 from apriori import apriori
 printData = False
 
-#Manejo de palabras, indexar.
+#Word management, indexing.
 class Words: 
     def __init__(self, example, folderInput):
         self.FullpathExample = example
@@ -42,13 +45,13 @@ class Words:
         self.numParagraph = {}
         self.pos = {}
 
-        self.read_example() # Leer texto
-        self.indexing()     # Indexar
+        self.read_example() # Read text
+        self.indexing()     # Index
 
         self.actualParagraph = 0
         self.actualDoc = 0
         self.actualWord = 0
-        if printData: print "Numero documentos",self.numDocs
+        if printData: print "Number of documents",self.numDocs
         #for e in self.pos:
             #print self.pos[e],"\n"
 
@@ -58,15 +61,15 @@ class Words:
         #with codecs.open(self.folderInput+"/"+self.FullpathExample,'r','utf-8') as f:#data/ 'example1.txt' #,'utf-8'
         with codecs.open(self.FullpathExample,'r','utf-8') as f:
             self.text = f.read()
-        # Ver modulo "Interfaz" .fix_txt()
-        self.text = self.text.replace(u'\u2019','\'') #Problema comillas simples.
-        self.text = self.text.replace(u'\u2018','\'') #Problema comillas simples.
-        self.text = self.text.replace(u'\u201c','"') #Problema comillas dobles.
-        self.text = self.text.replace(u'\u201d','"') #Problema comillas dobles.        
-        self.text = self.text.replace(u'\u2014',' ') #Problema unicode —.
+        # See module "Interfaz" .fix_txt()
+        self.text = self.text.replace(u'\u2019','\'') #Problem single quotes.
+        self.text = self.text.replace(u'\u2018','\'') #Problem single quotes.
+        self.text = self.text.replace(u'\u201c','"') #Problem double quotes.
+        self.text = self.text.replace(u'\u201d','"') #Problem double quotes.        
+        self.text = self.text.replace(u'\u2014',' ') #Problem unicode —.
         #u' '     ´  -> '
         self.text = self.text.replace('\r','\n')
-        #Limpiando texto stopword - AGREGAR MAS
+        #Cleaning text stopword - AGREGATE MORE
         self.text = self.text.replace('\'re',' are')
         self.text = self.text.replace('\'m',' am')
         self.text = self.text.replace('wasn\'t','was not')
@@ -91,30 +94,30 @@ class Words:
             text_str= text_str.replace(c," ")
         return text_str
 
-    # Separa texto en contexto
+    # Separate text in context
     def indexing(self):        
-        for doc_id, doc in enumerate(self.documents):#dividiendo por documentos
-            contex = re.split('\.[\ |\n+]+', doc) #dividiendo por parrafos
+        for doc_id, doc in enumerate(self.documents):#dividing into documents
+            contex = re.split('\.[\ |\n+]+', doc) #dividing into paragraphs
             for e in contex:
                 if e==" ":
                     contex.remove(' ')
                 if e=="":
                     contex.remove('')
-            for context_id, p in enumerate(contex):# dividiendo por palabras
-                p = self.remove_punc_upper(p.replace('\n',' ')) # Elimina signos
+            for context_id, p in enumerate(contex):# dividing into words
+                p = self.remove_punc_upper(p.replace('\n',' ')) # Eliminate signs
                 self.paragraph[doc_id] = self.paragraph.get(doc_id,[])
                 self.paragraph[doc_id].append(p)
 
-                for c, t in nltk.pos_tag((p).split()): #Agrega el tag NN VB ... a todas las palabras
+                for c, t in nltk.pos_tag((p).split()): #Agregate the tag NN VB ... to all the words
                     self.pos[doc_id] = self.pos.get(doc_id,[])
-                    self.pos[doc_id].append((context_id, c, t)) #context_id=Numero parrafo en el documento
+                    self.pos[doc_id].append((context_id, c, t)) #context_id=Number of paragraph in document
                 try:
-                    self.pos[doc_id].append((context_id, '.', None)) #Fin paragraph
+                    self.pos[doc_id].append((context_id, '.', None)) #End of paragraph
                 except:
                     pass
                 self.numParagraph[doc_id] = context_id
             self.numDocs = doc_id
-        #El numero de la palabra viene dada por la posicion en que se agrego a la lista
+        #The number of the word is assigned by its position in which it was aggregated to the list
 
     def initDocument(self, doc_id):
         if doc_id > self.numDocs:
@@ -123,7 +126,7 @@ class Words:
         self.actualParagraph = 0
         self.actualWord = 0
 
-    # Avanza por palabra. Antes debe inicializar un documento.
+    # Advance by word. Before must initialize a document.
     def getWord(self, num_paragraph = None, word_index=None):
         if word_index != None:
             self.actualWord = word_index
@@ -137,34 +140,34 @@ class Words:
     #
     def buscaPalabras(self, diccListTuple, F_list):
 
-        # diccListTuple: posiciones de todos los 1-grama Info apriori
-        # F_list: salida del algoritmo Apriori
+        # diccListTuple: positions of all the 1-gram Info apriori
+        # F_list: output of the Apriori algorithm
         
         #print self.pos
-        #Obtener palabra especifica
+        #Obtain a specific word
         #print self.pos[self.actualDoc][self.actualWord]
         
         """
-        ## -- Prueba palabras aleatorias en los #conceptos mas frecuentes".
+        ## -- Test random words in the most frequent #conceptos".
         print "WORD: ",self.pos[2][33] #insurance  -->  (parrafo, concepto, tag)
         print "WORD 2: ",self.pos[2][33][0] #insurance  --> parrafo
         print "WORD: ",self.pos[14][243] #care
         print "WORD: ",self.pos[16][44] #people
         print "WORD: ",self.pos[3][1] #state
         # OK
-        # salida tupla ( parrafo , concept , tag )
+        # tuple output ( paragraph , concept , tag )
         """
-        ## DATOS
-        #self.pos[ doc ][ pos_palabra -1 ] === tupla de la palabra anterior (articulo, advervio, etc)
-        #self.pos[ doc ][ pos_palabra +1 ] === tupla de la palabra siguiente
-        #self.pos[ doc ][ pos_palabra ][ 0 ] === Numero parrafo
-        #self.pos[ doc ][ pos_palabra ][ 1 ] === concepto
+        ## DATA
+        #self.pos[ doc ][ pos_palabra -1 ] === tuple of the previous word (article, adverb, etc)
+        #self.pos[ doc ][ pos_palabra +1 ] === tuple of the following word
+        #self.pos[ doc ][ pos_palabra ][ 0 ] === Paragraph number
+        #self.pos[ doc ][ pos_palabra ][ 1 ] === concept
         #self.pos[ doc ][ pos_palabra ][ 2 ] === tag -- NN
 
-        # Lista que guarda las posiciones de los conceptos 2-grama encontrados
+        # List which stores the positions of the 2-gram concepts which have been found
         closed_dicc_list = {}
         
-        # 1.- Preparar F2_aux: contiene toda convinacion posible de 2 gramas
+        # 1.- Prepare F2_aux: contains all possible combinations of 2 grams
         F2_grama_aux = set()
         try:
             F_list[1]
@@ -173,25 +176,25 @@ class Words:
             return aux
         for item_frozenset in F_list[1]:
             if len(item_frozenset) != 2:
-                print "ERROR!, F[1] no es 2-grama"
+                print "ERROR!, F[1] is not a 2-gram"
                 break
             c1, c2 = item_frozenset
             F2_grama_aux.add( c1+" "+c2 )
             F2_grama_aux.add( c2+" "+c1 )
 
-        if printData: print "Lista auxiliar de convinaciones 2-grama", F2_grama_aux
+        if printData: print "Auxiliar list of 2-gram combinations", F2_grama_aux
        
         if printData: print "========================================"
-        # 2.- Iterar por todo diccListTuple, el cual contiene las posiciones de todas los conceptos 1-grama
+        # 2.- Iterate on the complete diccListTuple, which contains the positions of all the 1-gram concepts
         # diccListTuple = { A:[ (0, 14), ... ], ... }
         for concepto in diccListTuple:
-            # concepto: la palabra actual seleccionada                        
+            # concept: the currently selected word                        
             for tupla_poscicion in diccListTuple[concepto]: #
-                # tupla_poscicion: (num_documento, posicion concepto en tal documento)
+                # tupla_poscicion: (num_document, position concept in given document)
                 doc, posicionPalabra = tupla_poscicion
 
-                #Obtener palabra cercanas
-                palabra_posterior   = self.pos[ doc ][ posicionPalabra +1 ][1] # (parrafo, concepto, tag)
+                #Obtain close words
+                palabra_posterior   = self.pos[ doc ][ posicionPalabra +1 ][1] # (paragraph, concept, tag)
                 palabra_anterior    = self.pos[ doc ][ posicionPalabra -1 ][1]
 
                 concepto_2_grama_posterior  = concepto+" "+palabra_posterior
@@ -199,27 +202,27 @@ class Words:
 
                 if printData: print "Convinacion:",concepto.upper()+" "+palabra_posterior," \t; ", concepto_2_grama_anterior+" "+concepto.upper()
 
-                # 3.- Verificar si los 'pares 1-grama' estan en la lista 2-grama auxiliar (toda convinacion 2 grama)
+                # 3.- Verifify if the '1-gram pairs' are in the auxiliar 2-gram list (all combinations of 2 grams)
                 if concepto_2_grama_posterior in F2_grama_aux:
                     closed_dicc_list[doc] = closed_dicc_list.get(doc,[])
                     closed_dicc_list[doc].append( posicionPalabra )
                     closed_dicc_list[doc].append( posicionPalabra + 1 )
-                    if printData: print "\t\t2-grama found:", concepto_2_grama_posterior
+                    if printData: print "\t\t2-gram found:", concepto_2_grama_posterior
                     
                 if concepto_2_grama_anterior in F2_grama_aux:
                     closed_dicc_list[doc] = closed_dicc_list.get(doc,[])
                     closed_dicc_list[doc].append( posicionPalabra - 1 )
                     closed_dicc_list[doc].append( posicionPalabra )
-                    if printData: print "\t\t2-grama found:", concepto_2_grama_anterior
+                    if printData: print "\t\t2-gram found:", concepto_2_grama_anterior
         if printData: print "========================================"
-        if printData: print "LISTA CERRADA: ",closed_dicc_list
+        if printData: print "CLOSED LIST: ",closed_dicc_list
 
         
-        if printData: print "======= 4.- Preparando n-gramas ========"
-        ## 4.- Preparar F_list_ngrama: debe ser una lista de conceptos n-gramas -> [ 'A B', 'A B C',..
+        if printData: print "======= 4.- Preparing n-grams ========"
+        ## 4.- Prepare F_list_ngrama: must be a list of n-gram concepts -> [ 'A B', 'A B C',..
         F_list_ngrama = []
         """
-        #               1-gramas             2-gramas           3-gramas        n-grama
+        #               1-grams             2-grams           3-grams        n-gram
         # F_list = [ [ A, B ,C , ...],  [(A,B), (B,C), ...], [ (A, B, C), ... ], ... ]
         """
         for n_grama in F_list[1:]:
@@ -236,68 +239,68 @@ class Words:
                     aux_str += concepto
                 F_list_ngrama.append(aux_str)
 
-        if printData: print "====Lista n-gramas, segun la salida del conjunfo F(k) en Apriori===="
+        if printData: print "====List n-grams, accordingto the output of the set F(k) in Apriori===="
         if printData: print F_list_ngrama
 
-        # diccGramas: diccionario de diccionario
-        # diccGramas: diccGramas[numero_documento][n_grama]
-        diccGramas = {} # diccionario guarda los n-gramas a encontrar, separandolos por documento.
-        ## 5.- Buscar n-gramas en la closed_dicc_list usando la F_list_ngrama ('A B',...)
-        if printData: print "====Conjunto ordenado===="
+        # diccGramas: dictionary of dictionary
+        # diccGramas: diccGramas[number_document][n_gram]
+        diccGramas = {} # dictionary save the n-grams to search for, separate them by document.
+        ## 5.- Search n-grams in the closed_dicc_list using the F_list_ngram ('A B',...)
+        if printData: print "====Ordered set===="
         for doc in closed_dicc_list:
             diccGramas[doc] = diccGramas.get(doc, {})
             
-            #closed_dicc_list[doc] : lista de posiciones en tal documento (doc) :: [ 4,5,6,2,8,4,5,3,4,5,... ]
-            lista_posiciones = sorted(set(closed_dicc_list[doc])) # Lista cerrada sin elementos repetidos.
+            #closed_dicc_list[doc] : list of positions in given document (doc) :: [ 4,5,6,2,8,4,5,3,4,5,... ]
+            lista_posiciones = sorted(set(closed_dicc_list[doc])) # Closed list without repeated elements.
             #print "==",lista_posiciones
             
-            ## Buscar posiciones continuas
-            start = lista_posiciones[0] # posicion inicial del n-grama (auxiliar)
-            end = lista_posiciones[0]   # posicion final  del n-grama (auxiliar)
+            ## Search for continuous positions
+            start = lista_posiciones[0] # Initial position of the n-gram (auxiliar)
+            end = lista_posiciones[0]   # Final position of the n-gram (auxiliar)
             #print start, end, lista_posiciones
             #dicc = {}
-            count_list = [start] # posiciones del n-grama (auxiliar) - Final:[4,5,6] -> 4:Start, 5:End.
-            for posicion_palabra in lista_posiciones[1:]: # Omite posicion cero, se inicia en este.
+            count_list = [start] # positions of the n-gram (auxiliar) - Final:[4,5,6] -> 4:Start, 5:End.
+            for posicion_palabra in lista_posiciones[1:]: # Omit position zero, starts at this.
                 #print posicion_palabra,"-->",self.pos[ doc ][ posicion_palabra ][1]
-                if (end+1) == posicion_palabra: # si la siguiente palabra es posicion continua - Ejemplo 5,6
+                if (end+1) == posicion_palabra: # if the next word is contiguous position - Example 5,6
                     end = posicion_palabra
-                    count_list.append(posicion_palabra) # se agrega a la lista auxiliar del n-grama acutal
-                else: # Si no es continua calcular rango y guardar
+                    count_list.append(posicion_palabra) # aggregate to the auxiliar list of the current n-gram
+                else: # If not contiguous calculate range and save
                     n_grama_aux = end-start+1 # Calcula rango
                     
                     #for i in range(start,end+1):
                     diccGramas[doc][n_grama_aux] = diccGramas[doc].get(n_grama_aux,[])
-                    diccGramas[doc][n_grama_aux].append( count_list ) # Guarda el n-grama actual
+                    diccGramas[doc][n_grama_aux].append( count_list ) # Save the current n-gram
 
-                    count_list = [posicion_palabra] # reinicia la lista
-                    start = posicion_palabra # reinicia variable auxiliar
-                    end = posicion_palabra # reinicia variable auxiliar
-            # Extrae el ultimo n-grama actual.
+                    count_list = [posicion_palabra] # reinitialize the list
+                    start = posicion_palabra # reinitialize auxiliar variable
+                    end = posicion_palabra # reinitialize auxiliar variable
+            # Extract the last current n-gram.
             n_grama_aux = end-start+1
             diccGramas[doc][n_grama_aux] = diccGramas[doc].get(n_grama_aux,[])
             diccGramas[doc][n_grama_aux].append( count_list )
 
-        if printData: print "N-gramas ordenados, contiene posiciones:"#,diccGramas
-        ## Verificar si existen en F_list_ngrama
-        # Para cada n-grama separados por documentos
-        for doc in diccGramas: # por cada documento
-            for n_grama in diccGramas[doc]: # por cada n-grama en documento x
-                if printData: print "----- Documento:", doc, "\t",str(n_grama)+"_grama------"
-                for pos_list in diccGramas[doc][n_grama]: # Para cada lista que guarda posiciones del n-grama
-                    for pos in pos_list: # Para cada posicion del n-grama actual
-                        #[0]: Numero documento
-                        #[1]: Concepto
-                        #[2]: Tipo (NN)
-                        if printData: print self.pos[ doc ][ pos ]#[1] # imprime la informacion del concepto en tal pos
+        if printData: print "Ordered N-grams, contains positions:"#,diccGramas
+        ## Verify if exist in F_list_ngrama
+        # For each n-gram which is separated by document
+        for doc in diccGramas: # for each document
+            for n_grama in diccGramas[doc]: # for each n-gram in document x
+                if printData: print "----- Document:", doc, "\t",str(n_grama)+"_gram------"
+                for pos_list in diccGramas[doc][n_grama]: # For each list which stores positions of n-gram
+                    for pos in pos_list: # For each position of the current n-gram
+                        #[0]: Document number
+                        #[1]: Concept
+                        #[2]: Type (NN)
+                        if printData: print self.pos[ doc ][ pos ]#[1] # print the information of the concept in given position
                         
                         
                         
                 if printData: print "-------------------------------------------------------"
 
-            ## Eliminar 1-grama ocupados en los 2-gramas, eliminar 2-gramas ocupados por los 3-gramas,etc.
+            ## Eliminate 1-gram occupied by the 2-grams, eliminate 2-grams occupied by the 3-grams,etc.
             #diccGramas[doc][n_grama]
 
-            #Iterar de por doc normal - iterar n_grama inverzo - eliminar de yamor n-grama a menor.
+            #Iterate for normal doc - iterate n_gram inversely - eliminate from major n-gram to minor.
             
         
         return diccGramas
@@ -324,7 +327,7 @@ class RedSemantica:
         self.nameExample = nameExample.split('\\')[-1]
         self.w = Words(self.FullpathExample, self.folderInput)
         self.concepts = {}
-        self.verbBetweenC  = {} #verbos que han sido seleccionados entre dos conceptos.
+        self.verbBetweenC  = {} #verbs that have been selected between two concepts.
         self.conceptsDoc = {}
         self.conceptsList = []
         self.umbral = self.w.numDocs*umbral
@@ -333,8 +336,8 @@ class RedSemantica:
 
         self.diccionario_n_grama = {}
         
-        # APRIORI - var: conjunto de conceptos por documento para operar en tal algoritmo
-        # ver frecuent concepts
+        # APRIORI - var: set of concepts by document to operate with given algorithm
+        # see frequent concepts
         self.dataSet_T = []
         self.umbral_apriori = None
         self.conceptsInforApriori = {}
@@ -363,21 +366,21 @@ class RedSemantica:
         self.text_to_NN_VB_SW()
 
         self.frecuentConcetps() #concepts to list
-        #APRIORI algoritmo
+        #APRIORI algorithm
         if printData: print len(self.dataSet_T),(self.w.numDocs),umbral
         self.umbral_apriori = float(len(self.dataSet_T))/(self.w.numDocs)*umbral
-        if printData: print "Resultado umbral apriori", self.umbral_apriori
+        if printData: print "Result of apriori threshold", self.umbral_apriori
         self.F, s = apriori(self.dataSet_T, self.umbral_apriori)
 
         self.diccionario_n_grama = self.w.buscaPalabras(self.conceptsInforApriori, self.F)
 
-        # Modifica self.conceptsList, para luego agregar al self.M_S los n-gramas
-        #self.agregar_n_gramas(self.diccionario_n_grama) # Agrega n-gramas al proceso
+        # Modify self.conceptsList, to later aggregate the self.M_S the n-grams
+        #self.agregar_n_gramas(self.diccionario_n_grama) # Agregate n-grams to the process
 
-        # Solución: Modificar matchings en archivo final de salida
-        #self.matching(self.diccionario_n_grama) # lo lleve a concepts_to_txt2
+        # Solution: Modify matchings in final output file
+        #self.matching(self.diccionario_n_grama) # takes it to concepts_to_txt2
 
-        self.verbsToList()#Ordena los verbos
+        self.verbsToList()#Order the verbs
         self.add_to_M_S()
         self.red_semantica()
         
@@ -400,14 +403,14 @@ class RedSemantica:
         try:
             doc_name = self.folder+"1.- Concepts_frec "+self.nameExample+" "+str(self.umbralOriginal)+"% _Frec_"+str(self.umbral/self.w.numDocs)+".txt"
         except:
-            "Division por cero, existe un solo documento"
+            "Divide by zero, only one document exists"
             doc_name = self.folder+"1.- Concepts_frec "+self.nameExample+" "+str(self.umbralOriginal)+"% _Frec_"+str(self.umbral)+".txt"
 
         with io.open(doc_name, 'w', encoding='utf-8') as f:
             f.write(u'CONCEPT  - DOCS ID  - CANT DOC\n\n')
             for concepto in self.frequent_concepts:#conceptsList concepts
-                # k: concepto
-                # self.frequent_concepts[k] : conjunto de numero documentos al que pertenece el concepto
+                # k: concept
+                # self.frequent_concepts[k] : set of number of documents to which the concept belongs
                 # 
                 documentos = list(set(self.frequent_concepts[concepto]))#, list(set(self.frequent_concepts[k][0]))
                 strAux = concepto+"  -  "+ str(documentos)+"  -  "+str(len(documentos))
@@ -423,13 +426,13 @@ class RedSemantica:
         
         docs_aux = []
         for lista_documentos in self.frequent_concepts.values():
-            # lista de documentos, cada lista es al cual pertenece o está el concepto.
+            # list of documents, each list is the one to which it belongs or in which the concept is present.
             docs_aux.append( list( set(lista_documentos) ) )
         if printData: print "///////////////////////"
         if printData: print self.frequent_concepts
-        for doc in diccGramas: # por cada documento
-            for n_grama in diccGramas[doc]: # por cada n-grama en documento x                
-                for pos_list in diccGramas[doc][n_grama]: # Para cada lista que guarda posiciones del n-grama
+        for doc in diccGramas: # for each document
+            for n_grama in diccGramas[doc]: # for each n-gram in document x                
+                for pos_list in diccGramas[doc][n_grama]: # For each list that stores positions of the n-gram
                     
                     #print diccGramas[doc][n_grama]
                     #[0]: Numero documento
@@ -438,7 +441,7 @@ class RedSemantica:
                     # info_concept[0], info_concept[1], info_concept[2]
 
 
-                    #Verificar si todos los conceptos del n-grama son posibles eliminar para luego reemplazarlos
+                    #Verify if all the concepts of the n-grams are possible eliminate to later replace them
                     aux_string_verify = ""
                     aux_flag = True
                     aux_docs = []
@@ -450,12 +453,12 @@ class RedSemantica:
                         aux_string_verify += concepto+" "
                         
                         if self.frequent_concepts.has_key(concepto) and documento in self.frequent_concepts[concepto]:
-                            aux_docs.append(-1) # omite documento
+                            aux_docs.append(-1) # omit document
                         else:
                             aux_flag = False
                             aux_docs.append(documento)
                     if  not aux_flag:
-                        if printData: print "=======","n-grama false:",aux_string_verify,aux_docs, "======="
+                        if printData: print "=======","false n-gram:",aux_string_verify,aux_docs, "======="
                         continue
 
                     else:                    
@@ -468,8 +471,8 @@ class RedSemantica:
                             aux_string += concepto+" "
 
                             if self.frequent_concepts.has_key(concepto) and documento in self.frequent_concepts[concepto]:
-                                #print "Reemplazar:",concepto, documento
-                                # Quitar elemento
+                                #print "Replace:",concept, document
+                                # Remove element
                                 try:
                                     self.frequent_concepts[concepto].remove(documento)
                                     if printData: print concepto, documento
@@ -492,8 +495,8 @@ class RedSemantica:
         with io.open(doc_name, 'w', encoding='utf-8') as f:
             f.write(u'CONCEPT  - DOCS ID  - CANT DOC\n\n')
             for concepto in self.frequent_concepts:#conceptsList concepts
-                # k: concepto
-                # self.frequent_concepts[k] : conjunto de numero documentos al que pertenece el concepto
+                # k: concept
+                # self.frequent_concepts[k] : set of document numbers to which the concept belongs
                 # 
                 documentos = list(set(self.frequent_concepts[concepto]))#, list(set(self.frequent_concepts[k][0]))
                 strAux = concepto+"  -  "+ str(documentos)+"  -  "+str(len(documentos))
@@ -503,16 +506,16 @@ class RedSemantica:
                 
 
 
-    #Itera, pasando por todas las palabras.
+    #Itera, go through all the words.
     def text_to_NN_VB_SW(self):
         countDoc = 0
         self.w.initDocument(countDoc)
-        word = self.w.getWord() # numParrafo, word, indice doc, indice palabra.
+        word = self.w.getWord() # numParagraph, word, index doc, index word.
         wordSinLemmatize = word
         doc_id = 0
         paragraph_id = 0
         word_id = 0
-        #NN_ngrama =  [] #Desactiva busqueda de N-Gramas
+        #NN_ngrama =  [] #Deactivate search for N-Grams
         while(True):
             try:
                 paragraph_id = word[0]
@@ -522,8 +525,8 @@ class RedSemantica:
                 word = self.w.remove_punc_upper(word[1])#
                 wordSinLemmatize = word
                 if not word in stopwords:# No lemma stopwordVB
-                    word = lmtzr.lemmatize(word, 'n')#Elimina mayuscula
-                    word = lmtzr.lemmatize(word, 'n')#Elimina plural
+                    word = lmtzr.lemmatize(word, 'n')#Eliminate uppercase
+                    word = lmtzr.lemmatize(word, 'n')#Eliminate plural
                     word = word.lower()
                     wordSinLemmatize = wordSinLemmatize.lower()
             except Exception as inst:
@@ -539,25 +542,25 @@ class RedSemantica:
                     break
                 continue
             if word==" " or "." in word:
-                #NN_ngrama = [] #Desactiva busqueda de N-Gramas
+                #NN_ngrama = [] #Deactivate search for N-Grams
                 continue                
             #--
             if not word in stopwords:
                 if 'NN' in tag:
                     self.save_concept(word, doc_id, paragraph_id, word_id)
                 
-                if 'VB' in tag:# posible eliminacion, prioridad a los NN.
+                if 'VB' in tag:# possible elimination, give the NN's priority.
                     self.save_verb(wordSinLemmatize, doc_id, paragraph_id, word_id)
-                """#Desactiva busqueda de N-Gramas
+                """#Deactivate search for N-Grams
                 if 'NN' in tag:
                     self.save_concept(word, doc_id, paragraph_id, word_id)
                     NN_ngrama.append(word)
                 else:
                     if len(NN_ngrama)> 1:
                         c_ngrama = ' '.join(NN_ngrama)
-                        self.save_concept(c_ngrama, doc_id, paragraph_id, word_id-1) #word_id-1: palabra anterior
+                        self.save_concept(c_ngrama, doc_id, paragraph_id, word_id-1) #word_id-1: previous word
                     NN_ngrama = []
-                if 'VB' in tag:# posible eliminacion, prioridad a los NN.
+                if 'VB' in tag:# possible elimination, give the NN's priority.
                     NN_ngrama = []
                     self.save_verb(wordSinLemmatize, doc_id, paragraph_id, word_id)
                 """
@@ -566,9 +569,9 @@ class RedSemantica:
             #--
             word = self.w.getWord()
 
-    # self.frequent_concepts: los 1-grama mas frecuentes, sin nada más de informacion.
-    # self.conceptsInforApriori: los 1-grama mas frecuente, con informacion para Apriori
-    # Guarda todos los conceptos más frecuentes mayor al umbral dado.
+    # self.frequent_concepts: the most frequent 1-grams, without any other information.
+    # self.conceptsInforApriori: the most frequent 1-grams, with information for Apriori.
+    # Save all the most frequent concepts above the given threshold.
     def frecuentConcetps(self):
         
         auxc = 0
@@ -583,15 +586,15 @@ class RedSemantica:
                 
             if len( set(cjto) ) >= self.umbral:
                 for t in tuple_list:
-                    #Concepto entrante ordenado por "c -> doc"
+                    #Incoming concept ordered by "c -> doc"
                     self.frequent_concepts[c] = self.frequent_concepts.get(c,[])
                     self.frequent_concepts[c].append(t[0])
 
-                    #c: concepto
-                    #t[0]: numero documento
-                    #t[1]: parrafo
-                    #t[2]: posicion palabra
-                    # Ocupado para guardar toda la información de los coneptos (NN)<
+                    #c: concept
+                    #t[0]: document number
+                    #t[1]: paragraph
+                    #t[2]: word position
+                    # Occupied to store all the information of the concepts (NN)<
                     
                     self.conceptsList.append((c, t))#[0], t[1], t[2]))
 
@@ -602,16 +605,16 @@ class RedSemantica:
                     #dataSet_T[t[0]][c] = dataSet_T[t[0]].get(c, [] )
                     #dataSet_T[t[0]][c].append( (t[1],t[2]) )
 
-                    #Guarda conceptos frecuentes en dicc como conjunto (evita repitencia)
+                    #Store frequent concepts in dicc as a set (avoiding repetitions)
                     dataSet_T[t[0]] = dataSet_T.get(t[0], set() )
                     dataSet_T[t[0]].add( c )
                     #dataSet_T.append(
         
         
-        # Una vez obtenidos los conceptos más frecuentes (1-grama), utilizarlos en algoritmo Apriori
+        # Once obtained the most frequent concepts (1-gram), use them in the Apriori algorithm
         dataSet_aux = []
         ## -- APRIORI --##
-        #Transoformar a lista de listas
+        #Transform to a list of lists
         for k in dataSet_T:
             #print k,":", dataSet_T[k]
             dataSet_aux.append( list(dataSet_T[k]) )
@@ -622,7 +625,7 @@ class RedSemantica:
             if printData: print e
             
                     
-        self.conceptsList = sorted(self.conceptsList, key=lambda x: x[1]) #Conceptos consecutivos.
+        self.conceptsList = sorted(self.conceptsList, key=lambda x: x[1]) #Consecutive concepts.
 
         
         
@@ -637,11 +640,11 @@ class RedSemantica:
             print "ERROR<<< "+c1+":"+c2+" >>>"
         candidates = []
         candidatesSW = [] # Stopword
-        for i in range(i1+1, i2):#Extrae todos los candidatos entre 2 conceptos.
+        for i in range(i1+1, i2):#Extract all the candidates between 2 concepts.
             if self.w.pos[doc_id1][i][1] not in stopwords: 
                 if 'VB' in self.w.pos[doc_id1][i][2]:
                     aux = lmtzr.lemmatize(self.w.pos[doc_id1][i][1], 'v')
-                    candidates.append( aux.lower() )# Forma agresiva.
+                    candidates.append( aux.lower() )# Agressive form.
             else:
                 if self.w.pos[doc_id1][i][1] in stopwordsVerbs:
                     candidatesSW.append(self.w.pos[doc_id1][i][1])

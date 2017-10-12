@@ -1,3 +1,6 @@
+﻿# Copyright (C) 2017  Héctor Beck-Fernandez(hbeck@uta.cl), David F. Nettleton (david.nettleton@upf.edu), Lorena Recalde, Diego Saez-Trumper, Alexis Barahona-Peñaranda
+# License: GNU GENERAL PUBLIC LICENSE v3.0   See LICENSE for the full license.
+
 # -*- coding: utf-8 -*-
 
 import wx
@@ -17,14 +20,14 @@ folder_image = "Img/"
 #from contrasenhas.vista import VistaContrasenha
     
 class Main(wx.App):
-    """Clase que inicia La ventana pricnipal de la aplicación"""
+    """Class which initializes the main window of the application"""
     
     def OnInit(self):
         """
-        Método que instancia la clase que incia la ventan principal
+        Method which instantiates the class which initializes the main window
         """
         self.ventana = VentanaPrincipal(None)
-        """Propiedad que almacena el objeto de la ventana principal """
+        """Property which stores the object of the main window """
         
         self.SetTopWindow(self.ventana)
         
@@ -33,15 +36,15 @@ class Main(wx.App):
 
 class TestNB(wx.Notebook):
     """
-    Clase que crea las pestañas de la aplicación
+    Class which creates the application tabs
     """
     def __init__(self, parent, id, names = ["Pestana_1"]):
         
         """
-        Constructor de las pestañas de la aplicación.
+        Constructor of the application tabs.
         
-        :param parent: El objeto de la ventana principal que contendrá las diferentes pestañas
-        :param id: Identificador único de la ventana
+        :param parent: The object of the main windows which will contain the different tabs
+        :param id: Unique identifier for the window
         """
         
         wx.Notebook.__init__(self, parent, id, style=
@@ -52,7 +55,7 @@ class TestNB(wx.Notebook):
                              #wx.BK_RIGHT
                              # | wx.NB_MULTILINE
                              )
-        """Propiedad que almacena la ventana madre donde deben ir las pestañas """
+        """Property which stores the main window where the tabs must go """
         self.parent = parent
 
         # Almacenar pestañas - self.pestanas[Nombre_pestana]
@@ -61,7 +64,7 @@ class TestNB(wx.Notebook):
             self.pestanas[pestana_name] = wx.Panel(self)
             self.AddPage(self.pestanas[pestana_name], pestana_name)
         #self.pestana1 = wx.Panel(self)
-        #self.AddPage(self.pestana1, "Gestión de Contraseñas")
+        #self.AddPage(self.pestana1, "Password Management")
         
 
 class Gui1:
@@ -228,7 +231,7 @@ class Gui1:
         self.log.SetEditable(False)
 
 
-        # INICIAR - BUTTON
+        # INITIALIZE - BUTTON
         self.b_start = wx.Button( parent, wx.ID_ANY,
                                      u"Start", (10, 280), (120, 25),
                                      0 )
@@ -239,7 +242,7 @@ class Gui1:
         self.helpButton = wx.ContextHelpButton(parent, pos=(855,15))
 
         
-        # INTANCEAR EMOTIV
+        # INSTANTIATE EMOTIV
         #self.emotiv = Emo.Emotiv(self, interfaz2)
         #Run emotiv thread loop
         #self.emotiv.start()
@@ -290,21 +293,21 @@ class Gui1:
                 text = f.read()
                 
             #Seguir rellenando
-            text = text.replace(u'\u2019','\'') #Problema comillas simples.
-            text = text.replace(u'\u2018','\'') #Problema comillas simples.
-            text = text.replace(u'\u201c','"') #Problema comillas dobles.
-            text = text.replace(u'\u201d','"') #Problema comillas dobles.        
-            text = text.replace(u'\u2014',' ') #Problema unicode —.
-            text = text.replace(u'\ufeff','\ ') #Problema unicode2 ??
-            #text = text.replace(u'\xb4','\'') #Problema unicode2
+            text = text.replace(u'\u2019','\'') #Problem single quotation marks.
+            text = text.replace(u'\u2018','\'') #Problem single quotation marks.
+            text = text.replace(u'\u201c','"') #Problem double quotation marks.
+            text = text.replace(u'\u201d','"') #Problem double quotation marks.        
+            text = text.replace(u'\u2014',' ') #Problem unicode —.
+            text = text.replace(u'\ufeff','\ ') #Problem unicode2 ??
+            #text = text.replace(u'\xb4','\'') #Problem unicode2
             
-            #Guarda las modificaciones - repara coding
+            #Save the modifications - repair coding
             with codecs.open(self.folder_name_files+"/"+filename,'w','cp1250', "replace") as f:
                 f.write(text)
-            #Abre reemplazando por espacios los caracteres no validos
+            #Open and replace invalid characters with spaces
             with codecs.open(self.folder_name_files+"/"+filename,'r','utf-8', "replace_space") as f:
                 text = f.read()
-            #Crea un archivo limpio en UTF-8 sin errores
+            #Create a clean file in UTF-8 without errors
             f = open(self.folder_name_files+"/"+filename, "w")
             f.write(text)
             f.close()
@@ -399,10 +402,10 @@ class Gui1:
 
 class Gui2:
     def __init__(self, parent):
-        # VARIABLES GLOBALES
+        # GLOBAL VARIABLES
         
         
-        # TITULO
+        # TITLE
         text=wx.StaticText(parent, label="Web Extractor",
                            pos=(10, 10) )
         text.SetForegroundColour((114,214,250)) # set text color (0,174,239) 46,145,181
@@ -517,7 +520,7 @@ class Gui2:
 
 class VentanaPrincipal(wx.Frame): #wx.Notebook
     """
-    Clase que crear la ventana principal de la aplicación
+    Class which creates the main window of the application
     """
     def __init__(self, parent):
         # VARIABLES GLOBALES
@@ -527,7 +530,7 @@ class VentanaPrincipal(wx.Frame): #wx.Notebook
         provider = wx.SimpleHelpProvider()
         wx.HelpProvider_Set(provider)
         
-        # -cargar imagen background pestana 2
+        # -load background image tab 2
         #imagen_background = wx.Bitmap(folder_image+"emotiv.bmp", wx.BITMAP_TYPE_ANY)
         imagen_background = None
         width, heigh = 900, 400#imagen_background.GetSize()+(50,50)
@@ -544,41 +547,41 @@ class VentanaPrincipal(wx.Frame): #wx.Notebook
         # -bind - when closed
         #self.Bind(wx.EVT_CLOSE, self._when_closed)
         
-        # CREAR EL MENU
+        # CREATE THE MENU
         self.menu()
         
         
-        # CREAR NOTEBOOKS (pestañas)
+        # CREATE NOTEBOOKS (tabs)
         n_pestana1 = "Main"
         n_pestana2 = "WebExtractor"
         notebook = TestNB(self, -1, names = [n_pestana1,n_pestana2])
 
-        # CONTENIDO PESTAÑAS - notebook.pestanas[n_pestana1]
+        # CONTENT TABS - notebook.pestanas[n_pestana1]
 
-        # -background pestaña 2
+        # -background tab 2
         #background_p2 = wx.StaticBitmap(notebook.pestanas[n_pestana2], -1, imagen_background, (0, 0))
-        # -cargar contenido pestaña 2
+        # -load content tab 2
         #self.contenido_ventana_2(background_p2)
         #self.interfaz2 = Gui2(background_p2)
         self.interfaz2 = Gui2(notebook.pestanas[n_pestana2])
         
-        # -cargar contenido pestaña 1
+        # -load content tab 1
         #self.contenido_ventana_1(notebook.pestanas[n_pestana1])
         self.interfaz1 = Gui1(notebook.pestanas[n_pestana1], self.interfaz2)
         
         self.Show(True)
-        # Le damos tamaño a la ventana
+        # Assign size to the window
         self.Size = width, heigh
 
     
     def menu(self):
         
         """
-        Método que crea el menú de la ventana principal. Este menú es utilizado en todas las pestañas, no cambia
+        Method which creates the menu of the main window. This menu is used in all the tabs and remains unchanged
         """
         self.MiMenuBar = wx.MenuBar()
         self.itemsMenu = wx.Menu()
-        # CREAMOS PRIMERO LOS ITEMS
+        # FIRST CREATE THE ITEMS
         #subItem
         self.itemsMenu.Append(100, "Example 1", "", wx.ITEM_NORMAL)
         # subItem
@@ -592,11 +595,11 @@ class VentanaPrincipal(wx.Frame): #wx.Notebook
         self.itemsMenu.AppendItem(item)
         self.itemsMenu.AppendSeparator()
         # subItem
-        item = wx.MenuItem(self.itemsMenu,130, "Salir", "")
+        item = wx.MenuItem(self.itemsMenu,130, "Exit", "")
         ###item.SetBitmap(images.getExitBitmap())
         self.itemsMenu.AppendItem(item)
         
-        # Añadir subItems a menu
+        # ADD SUBITEMS TO MENU
         self.MiMenuBar.Append(self.itemsMenu,"File")
         self.SetMenuBar(self.MiMenuBar)
 
