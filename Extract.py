@@ -4,9 +4,9 @@ import urllib2
 import logging
 import codecs
 """
-filename: nombre del archivo final
-url: pagina de donde se extraera informacion
-div: es un elemento html, extraer elemento especifico
+filename: name of destination file
+url: page from which information will be extracted
+div: is an html element, extract specified element
 """
 class HtmlExtract:
     def __init__(self, filename, pages={}, divId=None):
