@@ -2,7 +2,7 @@
 # License: GNU GENERAL PUBLIC LICENSE v3.0   See LICENSE for the full license.
 
 # -*- coding: cp1252 -*-
-#import matplotlib.pyplot as plt #UnUsed < ver linea 162
+#import matplotlib.pyplot as plt #UnUsed < see linea 162
 from nltk import corpus
 import nltk
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -706,52 +706,52 @@ class RedSemantica:
                 count += 1
             return verbo_aux
 
-    # Al final no se encontrará en la wordnet, ya que trabaja con 1-gramas.
-    # SOl: Solo contar frecuencia de estas, eliminando ocurrencias en el archivo de salida
+    # Finally it will not be found in Wordnet, given that it works with 1-grams.
+    # SOl: Only count the frequency of these, eliminating occurrencies in the output file
     def agregar_n_gramas(self, diccGramas):
 
-        #diccGramas: diccionario de diccionario
-        #           [doc][n-grama] (posiciones)
+        #diccGramas: dictionary of dictionary
+        #           [doc][n-gram] (positions)
         
-        # [(u'state', (0, 0, 14)), -> concepto, (doc, parrafo, posicionWord)
+        # [(u'state', (0, 0, 14)), -> concept, (doc, paragraph, positionWord)
         # self.conceptsList#[0][1][0]: doc
-        # self.conceptsList#[0][1][1]: parrafo
+        # self.conceptsList#[0][1][1]: paragraph
         # self.conceptsList#[0][1][2]: pos
         #print self.conceptsList
         if printData: print "asd",self.conceptsList#[0][1][2]
         if printData: print diccGramas
-        for doc in diccGramas: # por cada documento
-            for n_grama in diccGramas[doc]: # por cada n-grama en documento x
-                if printData: print "----- Documento22:", doc, "\t",str(n_grama)+"_grama------"
-                for pos_list in diccGramas[doc][n_grama]: # Para cada lista que guarda posiciones del n-grama
+        for doc in diccGramas: # for each document
+            for n_grama in diccGramas[doc]: # for each n-gram in document x
+                if printData: print "----- Document22:", doc, "\t",str(n_grama)+"_gram------"
+                for pos_list in diccGramas[doc][n_grama]: # For each list which stores positions of n-gram
                     aux_list_string_n_grama = []
-                    for pos in pos_list: # Para cada posicion del n-grama actual
-                        #[0]: Numero documento
-                        #[1]: Concepto
-                        #[2]: Tipo (NN)
+                    for pos in pos_list: # For each position of the current n-gram
+                        #[0]: Document number
+                        #[1]: Concept
+                        #[2]: Type (NN)
                         #print self.pos[ doc ][ pos ]#[1]
-                        aux_list_string_n_grama.append(self.w.pos[ doc ][ pos ][1]) #agrega concepto
+                        aux_list_string_n_grama.append(self.w.pos[ doc ][ pos ][1]) #aggregate concept
                     aux_string_n_grama = "_".join(aux_list_string_n_grama)
-                    # Si la posicion del primer concepto (pos) esta en self.conceptsList, 
-                    # Si mismo doc, 
+                    # If the position of the first concept (pos) is in self.conceptsList, 
+                    # If the same doc, 
                     #if self.conceptsList[0][1][0] == doc and
 
-        # Mejor Iterar self.conceptsList
+        # Iterate self.conceptsList
         for tupla in self.conceptsList:
             lista_n_grama = self.busca_n_grama_en(diccGramas, tupla[1][0]) #doc: tupla[1][0]
             for t in lista_n_grama:
-                #t[0]: posicion 1 del n-grama
-                if t[0] == tupla[1][2]: # posicion1 del n-grama igual a posicion del conepto en la lista de concepto
-                    # Eliminar de la lista de conceptos los siguiente
+                #t[0]: position 1 of the n-gram
+                if t[0] == tupla[1][2]: # position 1 of the n-gram is the same as the position of the concept in the list of concepts
+                    # Eliminate the follow from the list of concepts
                     pass
-                    # Modificar el concepto a n-grama
-        # REACER VARIABNLES!!!
+                    # Modify the concept to n-gram
+        # REDO VARIABLES
         
     def busca_n_grama_en(self, diccGramas, doc):
         list_aux = []
         for n_grama in diccGramas[doc].values():
             list_aux.append(n_grama)
-        return list_aux # lista de tuplas que tienen posiciones de los n-gramas
+        return list_aux # list of tuples which have positions of the n-grams
         
         
 
@@ -761,42 +761,42 @@ class RedSemantica:
             tupla = self.seleccionConcepts()
         
     def red_semantica(self):
-        #Preparando variables - conceptos y verbos
+        #Preparing variables - concepts and verbs
         #self.frecuentConcetps() #concepts to list
 
-        ## AQUI
-        # Modificar  self.conceptsList
+        ## HERE
+        # Modify  self.conceptsList
         #self.agregar_n_gramas()
         
-        #self.verbsToList()#Ordena los verbos
-        #-- Itera agregando conceptos de un contexto a M_S
+        #self.verbsToList()#Order the verbs
+        #-- Iterate aggregating concepts of a context to a M_S
         #print self.conceptsList
         """
         tupla = self.seleccionConcepts()
         while tupla!=None:
             tupla = self.seleccionConcepts()
         """
-        ## AQUI
+        ## HERE
         start = None
         if self.printTime:
             start = time.time()
 
-        # self.M_S: guarda conceptos consecutivos de a pares, para despues buscar verbos a su alrededor.
+        # self.M_S: store consecutive concepts as pairs, to later search for verbs in their vecinity.
         for c1, doc_id1, par_id1, i1, c2, doc_di2, par_id2, i2, rel_type in self.M_S:
-            # Busca verbos cercanos a los pares de conceptos guardados en M_S
+            # Search for verbs which are close to the stored concept pairs in M_S
             verbo = self.find_verb(c1, doc_id1, par_id1, i1, c2, doc_di2, par_id2, i2)
-            # redSemantica: diccionario guarda objetos de grafos
+            # redSemantica: semantic network, dictionary stores graph objects
             self.redSemantica[doc_id1] = self.redSemantica.get(doc_id1, nx.DiGraph()) # par_id1
-            if not self.redSemantica[doc_id1].has_edge(c1,c2):# doc_id, cambiar a doc_id1
+            if not self.redSemantica[doc_id1].has_edge(c1,c2):# doc_id, change to doc_id1
                 if c1==c2 and verbo == None:
                     continue
-                self.redSemantica[doc_id1].add_edge(c1,c2)#Crearla
+                self.redSemantica[doc_id1].add_edge(c1,c2)#Create it
                 self.redSemantica[doc_id1][c1][c2]['label'] = verbo
 
         if self.printTime: print "Tiempo:", time.time() - start
         
-    # Iterar hasta el final.
-    # self.M_S: guarda conceptos consecutivos de a pares, para despues buscar verbos a su alrededor.
+    # Iterate to the end.
+    # self.M_S: store consecutive concepts as pairs, to later search for verbs in their vecinities.
     def seleccionConcepts(self):
         try:
             t1 = self.conceptsList[self.actualIndex]#[1]#[self.actualParagraph]
@@ -804,22 +804,22 @@ class RedSemantica:
         except Exception as inst:
             return None
         
-        if t1[1][0] == t2[1][0] and t1[1][1] == t2[1][1]: #Mismo doc y mismo contexto.
+        if t1[1][0] == t2[1][0] and t1[1][1] == t2[1][1]: #Same doc and same context.
             self.actualIndex+=1
             rel_type = 'Normal'
-            if self.is_superset(list(set(self.conceptsDoc[t1[0]])), list(set(self.conceptsDoc[t2[0]])) ): # Error. // Cambiado
+            if self.is_superset(list(set(self.conceptsDoc[t1[0]])), list(set(self.conceptsDoc[t2[0]])) ): # Error. // Changed
                 rel_type = 'Super'
             self.M_S.append((t1[0], t1[1][0], t1[1][1], t1[1][2],t2[0], t2[1][0], t2[1][1], t2[1][2],rel_type))
             return (t1, t2)
-        else:#aumentar indice para siguiente contexto
+        else:#augment index for next context
             self.actualIndex+=1
             return (None,None)
 
     def is_superset(self, l1,l2):
-        if len(set(l2) - set(l1)) == 0: #Elimina elementos de l2.
+        if len(set(l2) - set(l1)) == 0: #Eliminate elements of l2.
             return True
         return False 
-    def save_concept(self, word, doc_id, paragraph_id, word_id):#Dividirlos en contextos.
+    def save_concept(self, word, doc_id, paragraph_id, word_id):#Dividethem in contexts.
 
         if self.delConceptEqual1:
             if len(word) == 1:
@@ -838,7 +838,7 @@ class RedSemantica:
         self.verbs[word] = self.verbs.get(word,[])
         self.verbs[word].append((doc_id, paragraph_id, word_id))
  
-    def save_stopwordVerb(self, word, doc_id, paragraph_id, word_id): #No usada
+    def save_stopwordVerb(self, word, doc_id, paragraph_id, word_id): #Not used
         if word in stopwordsVerbs:
             self.stopwords[word] = self.stopwords.get(word,[])
             self.stopwords[word].append((doc_id, paragraph_id, word_id))
@@ -849,7 +849,7 @@ class RedSemantica:
             try:
                 folder_name = self.folder+"2.- RS_by_doc umbral_"+self.nameExample+" "+str(self.umbralOriginal)+"% _Frec_"+str(self.umbral/self.w.numDocs)+".txt"
             except:
-                "Hay un solo documento, el inicial 0 (Division por 0 error)."
+                "There is only one document, the initial one 0 (Divide by zero error)."
                 folder_name = self.folder+"2.- RS_by_doc umbral_"+self.nameExample+" "+str(self.umbralOriginal)+"% _Frec_"+str(self.umbral)+".txt"
             folder_dest = os.path.join(script_dir, folder_name)
             try:
@@ -875,13 +875,13 @@ class Meme:
                  delConceptEqual1 = False,
                  printTime = False):
         self.printTime = printTime
-        #Borra conceptos de largo igual a 1
+        #Delete concepts which are equal to 1 in a lengthwise manner
         self.delConceptEqual1 = delConceptEqual1
-        #Archivos de entrada txt utf8
+        #Input files txt utf8
         self.folderInput = folderInput
         #TM LIST - equal similar ...
         self.tm_list = tm_list
-        #Crear carpeta - contiene todos los archivos creados
+        #Create folder - contains all the created files
         script_dir = os.path.dirname(os.path.abspath(__file__))
         self.fecha = fecha
         self.nameExample = nameExample.split('\\')[-1]
@@ -914,27 +914,27 @@ class Meme:
         self.memes = {}
         self.sort_lexicographically()
 
-        # Calcula IC de los conceptos mas frecuentes.
+        # Calculate IC for the most frequent concepts.
         
         self.frec = {}        
-        self.calc_frec()# Calcula las frecuencias de todos los conceptos
+        self.calc_frec()# Calculate the frequencies of all the concepts
         
         self.N = 0
-        self.cal_N() # calcula el N. Sumatoria de las frecuencias
+        self.cal_N() # calculate the N. Summation of the frequencies
         
         self.IC = {}
-        self.calc_IC() # Calcula los IC de todos los conceptos
+        self.calc_IC() # Calculate the IC of all concepts
         
         
         
-        #Paso final.
-        self.memesEscogidos = {} # Diccionario resultados de memes iguales o similares.
+        #FINAL STEP.
+        self.memesEscogidos = {} # Dictionary of results of memes which are the same or similar.
         start = None
         if self.printTime:
-            print "Escoger memes de acuerdo a tm (algoritmo principal)"
+            print "Choose memes according to tm (main algorithm)"
             start = time.time()
-        self.largoMasFrecuente = self.escogerMemes() #Retorna el largo del meme mas frecuente.
-        if self.printTime: print "Tiempo:", time.time() - start
+        self.largoMasFrecuente = self.escogerMemes() #Returns the length of the most frequenct meme.
+        if self.printTime: print "Time:", time.time() - start
 
         #to txt.
         if excepts:
@@ -951,16 +951,16 @@ class Meme:
     def escogerMemes(self):
         li = []
         for m1 in self.memes:
-            li.append(m1)# guarda indices/numeros de los memes.
+            li.append(m1)# stores indices/numbers of the memes.
             
         memeSimilar = {}
-        masLargo = 0 #Meme mas largo.
+        masLargo = 0 #The longest meme.
         for i in range(0,len(li)):
             count = 0
             for i2 in range(0,len(li)):
                 if li[i] != li[i2]:
                     tm = self.matching(self.memes[li[i]], self.memes[li[i2]])
-                    #if tm==1 or tm==2: #Si son iguales o similares
+                    #if tm==1 or tm==2: #If they are the same or similar
                     if tm in self.tm_list:
                         count += 1 
                         memeSimilar[li[i]] = memeSimilar.get(li[i], [])
@@ -972,8 +972,8 @@ class Meme:
         return masLargo
 
     def matching(self, m1, m2):
-        if len(m1)==len(m2):#Igual
-            dist = self.distmeme(m1, m2, flag=False)#flag: imprime dists False True
+        if len(m1)==len(m2):#Same
+            dist = self.distmeme(m1, m2, flag=False)#flag: prints dists False True
             if dist==0:
                 return 1
             else:
@@ -1001,7 +1001,7 @@ class Meme:
                 return 6
         return 0
 
-    def distmeme(self, m1, m2, flag=False):#BORRAME
+    def distmeme(self, m1, m2, flag=False):#DELETE ME
         sumaDistCon1 = 0
         sumaDistCon2 = 0
         sumaRel = 0
@@ -1013,14 +1013,14 @@ class Meme:
                 print "(*)",m1[i][0],m2[i][0],sumaDistCon1,"+",m1[i][1],m2[i][1], sumaDistCon2,"+", m1[i][2],m2[i][2],sumaRel
         return self.ro*((sumaDistCon1 + sumaDistCon2)/2) + self.sigma*sumaRel
             
-    #De Digraph a lista, luego ordena lexicographicamente.
+    #De Digraph to list, then order lexicographically.
     def separarGrafos(self):
-        #Separar Digraph
+        #Separate Digraph
         #ud=d.to_undirected()
         #hl=nx.connected_component_subgraphs(ud)
         #for l in hl: for e in l.edges(): print e
-        #CASO1: no mover c1 y c2.
-        #Separa grafos conectados.
+        #CASE1: don't move c1 and c2.
+        #Separate connected graphs.
         count = 0
         for doc_id in self.s.redSemantica:
             ud = self.s.redSemantica[doc_id].to_undirected()
@@ -1055,7 +1055,7 @@ class Meme:
     def dist_con(self, c1, c2):
         if c1 == c2:
             return 0
-        #No existe c1 en corpus. Ej, n-gramas.
+        #c1 does not exist in the corpus. E.g., n-grams.
         try:
             l = ['abstraction', None,'None', 'entity', 'object', 'attribute', 'psychological_feature']
             superior = self.LSup(c1,c2)
@@ -1067,11 +1067,11 @@ class Meme:
                 return 0.0
             else:
                 return (d-2) / math.log( float(self.N)**2 ,2)
-        #c1 o c2, no econtrado en el corpus.
+        #c1 or c2, not found in the corpus.
         except:
             return 1.0
     
-    def dist_rel(self, r1, r2):#DUDA
+    def dist_rel(self, r1, r2):#DOUBT
         if (r1 is None) and (r2 is not None):
             return min([self.dist_rel('be',r2), self.dist_rel('have',r2)])
 
@@ -1079,39 +1079,39 @@ class Meme:
             return min([self.dist_rel(r1,'be'), self.dist_rel(r1,'have')])
 
 
-        #distancia entre r1 y r2 del arbol / largo de la rama
+        #distance between r1 and r2 of the tree / length of branch
         if r1==r2:
             return 0.0
         flag1 = False#Except parches
         flag2 = False#Except parches
         s = wn.synsets(r1, wn.VERB)
         
-        try:#Except parches
-            #r2 = lmtzr.lemmatize(r2, 'v')+'.v.01'  # None.v.01  no existe.
-            r2 = lmtzr.lemmatize(r2, 'v')  # None.v.01  no existe.
+        try:#Except patches
+            #r2 = lmtzr.lemmatize(r2, 'v')+'.v.01'  # None.v.01  does not exist.
+            r2 = lmtzr.lemmatize(r2, 'v')  # None.v.01  does not exist.
             #s2 = wn.synset(r2)
-        except:#Except parches
+        except:#Except patches
             flag2 = True
             self.wordExcept.append(r2+' - v')
             
         if flag2 or len(s)==0:
-            return 0.0#Except parches
+            return 0.0#Except patches
         
         #Reemplazar ' ' por '_'
         if ' ' in r1 or ' ' in r2:
-            print "WARNING espacio",r1, r2 ,s #, s2
+            print "WARNING space",r1, r2 ,s #, s2
         l = []
         
-        for e in s:#Para cada definicion de r1
+        for e in s:#For each definition of r1
             dist = e.hypernym_distances()
-            for arbol in e.hypernym_paths():#Arbol de def hacia abajo
-                for syns in arbol:#cada def tiene un cjto de synset (para cada nivel del arbol)
-                    if r2 in syns.lemma_names():#cada cjto de synset tiene lemmas, si r2 esta en los lemmas
-                        for i in dist:#Buscar su distancia
+            for arbol in e.hypernym_paths():#Tree of def in downward direction
+                for syns in arbol:#each def has a set of synset (for each level of the tree)
+                    if r2 in syns.lemma_names():#each set of synset has lemas, if r2 is among the lemas
+                        for i in dist:#Find its distance
                             if i[0] == syns:
                                 l.append( (i[1] , len(dist)-1) )
         
-        l = sorted( l, key=lambda x: x[0]) #ORdena por 1er elemento de tupla, no del segundo
+        l = sorted( l, key=lambda x: x[0]) #Order by 1st element of the tuple, not the second
         if len(l)==0:
             return 1.0 # No match exists
         seleccion = l[0]
@@ -1122,23 +1122,23 @@ class Meme:
             return 0.0
         return (float(seleccion[0]) /seleccion[1])  #self.lengh(r1,r2)/self.lenght2(r1,r2)
 
-    #Calcula el IC y los guarda en un diccionario. N: #archivos del corpus.
+    #Calculate the IC and store them in a dictionary. N: #number of files in the corpus.
     def calc_IC(self):
         for k in self.s.concepts:
-            #Si existe en el corpus
+            #If exists in the corpus
             try:
                 self.IC[k] = -math.log(self.frec[k]/float(self.N) , 2)
             except:
                 pass
     def calc_frec(self):
         for k in self.s.concepts:
-            #Si existe en el corpus
+            #If exists in the corpus
             try:
                 self.frec[k] = corpus[k]
-            #Si no existe en el corpus. Ejemplo los n-gramas.
+            #If does not exist in the corpus. For example, the n-grams.
             except:
-                #REVISAR
-                #sol: promedio de frecuencia de los n-gramas?
+                #REVISE
+                #sol: average of the frequency of the n-grams.
                 n_grama = k.split(" ")
                 num_gramas = len(n_grama)
                 suma = 0
@@ -1147,13 +1147,13 @@ class Meme:
                     try:
                         suma += corpus[i]
                     #Bug 482: Some nouns not being lemmatised by WordNetLemmatizer().lemmatize
-                    except:#Solution: quitar la 's' final en la palabra.
+                    except:#Solution: remove the 's' at the end of the word.
                         try:
                             suma += corpus[i[:-1]]
-                        #La palabra no existe en el corpus. Ej "obamacare"
+                        #The word does not exist in the corpus. E.g. "obamacare"
                         except:
                             pass
-                #Si el n-grama no se econtro
+                #If the n-gram is not found
                 promedio = suma / num_gramas
                 if promedio != 0:
                     self.frec[k] = promedio#corpus[k]
@@ -1163,14 +1163,14 @@ class Meme:
         for k in self.frec:
             self.N += self.frec[k]
             
-    #Calcula el IC de un concepto superior. Como abstraction, object, ...
+    #Calculate the IC of a superior concept. As abstraction, object, ...
     def IC_sup(self, c):
-        #Si c==None, es porque no se econtro un LSup para c1 o c2 en la wordnet.
+        #If c==None, its because an LSup could not be found for c1 or c2 in Wordnet.
         if c==None:
             return 0.0 
         try:
             return -math.log(corpus[c]/ float(self.N), 2) 
-        #Palabra sup no está en el corpus. Ejemplo "definite_quantity"
+        #Word sup is not in the corpus. For example, "definite_quantity"
         except:
             return 0.0 
 
@@ -1184,11 +1184,11 @@ class Meme:
             self.wordExcept.append(c1+' - c')
             #print c2
         try:
-            s2 = wn.synset(lmtzr.lemmatize(c2)+'.n.01') # solo el primero de las definiciones
+            s2 = wn.synset(lmtzr.lemmatize(c2)+'.n.01') # only the first of the definitions
         except:
             flag2=True
             self.wordExcept.append(c2+' - c')
-        # Retornar None, cuando no se encuentra en la wordnet el c1 o c2
+        # Returns None, when c1 or c2 are not found in Wordnet
         if flag1 or flag2:
             return None
         
@@ -1199,7 +1199,7 @@ class Meme:
     def excepts_to_txt(self):
         doc_name = self.folder+"3.1.- EXCEPT.umbral_"+str(self.s.umbral/self.s.w.numDocs)+"_Frec_"+str(self.s.umbralOriginal)+"_Concepts__"+self.s.nameExample+".txt"
         with io.open(doc_name, 'w', encoding='utf-8') as f:
-            f.write(u'WORD - c:concept, v:verb \nCantidad de palabras en except:'+str(len(self.wordExcept))+'\n\n')
+            f.write(u'WORD - c:concept, v:verb \nNumber of word in except:'+str(len(self.wordExcept))+'\n\n')
             for e in list(set(self.wordExcept)):#conceptsList concepts
                 f.write(e+u'\n')
         f.close()
@@ -1208,17 +1208,17 @@ class Meme:
             doc_name = self.folder+"3.- Meme.umbral_"+self.s.nameExample+" "+str(self.s.umbralOriginal)+"% _Frec_"+str(self.s.umbral/self.s.w.numDocs)+".txt"
         except:
             doc_name = self.folder+"3.- Meme.umbral_"+self.s.nameExample+" "+str(self.s.umbralOriginal)+"% _Frec_"+str(self.s.umbral)+".txt"
-        #Ordena memes
+        #Ordener memes
         guardar_memes = []
-        for e in self.memesEscogidos: #Para cada ID de self.meme
+        for e in self.memesEscogidos: #For each ID of self.meme
             memeID2 = []
             docID2 = []
             for i in self.memesEscogidos[e]:#DocIdMeme1, DocIdMeme2, tm, memeId1, memeId2
                 memeID2.append( i[4] )
-                docID2.append( i[1] ) #los doc de memes similares|iguales
+                docID2.append( i[1] ) #the doc of memes which are similar|the same
             docID2 = list(set(docID2))
             
-            #Contar los "c" diferentes, "r":contar rel no vacias.
+            #Count the different "c", "r":count non empty "rel".
             conceptos = []
             relaciones = []
             for m1 in self.memes[e]:
@@ -1228,9 +1228,9 @@ class Meme:
                     conceptos.append(m1[1])
                 if (not m1[2] in relaciones) and m1[2]!=None :
                     relaciones.append(m1[2])
-            # append - numero meme1, meme1, IDmeme2, , cantidad referencias, cantidad de conceptos distintos, cantidad de rela distintas.
+            # append - number meme1, meme1, IDmeme2, , number of references, number of distinct concepts, number of distinct relations.
             guardar_memes.append( (e, self.memes[e] , memeID2 , ( len(memeID2) , len(docID2) ,len(conceptos) ,  len(relaciones)) ))
-            # Ordenar con mas de 1 elemento? D:
+            # Order with more than 1 element? D:
             guardar_memes = sorted(guardar_memes, key=lambda t: t[3], reverse=True)
 
         with io.open(doc_name, 'w', encoding='utf-8') as f:
@@ -1256,17 +1256,17 @@ class Meme:
     def all_memes(self):
         doc_name = self.folder+"6.- ALL_MEMES_"+self.s.nameExample+" "+str(self.s.umbralOriginal)+"%.dot"
         with io.open(doc_name, 'w', encoding='utf-8') as f:
-            f.write(u" Todos los memes \n") 
+            f.write(u" All the memes \n") 
             for m1 in self.memes:
                 f.write(u" #-"+str(m1)+": "+str(self.memes[m1])+"\n\n")
         f.close()
 
     def resultados(self):
-        # Variable para guardar las relaciones
+        # Variable to store the relations
         relaciones = []
         relacion_frec = []
         
-        # Extrae los elementos, tranformandolos a listas de listas ordenadas.
+        # Extract the elements, tranform them to ordered lists of lists.
         lista = []
         lista2 = []
         lista2Sorted = []
@@ -1274,12 +1274,12 @@ class Meme:
 
         doc_name = self.folder+"4.- Resultado_final_RS_"+self.s.nameExample+" "+str(self.s.umbralOriginal)+"%.dot"
         with io.open(doc_name, 'w', encoding='utf-8') as f:
-            f.write(u'Redes semanticas \n\n')
+            f.write(u'Semantic networks \n\n')
             for doc in self.s.redSemantica:                
                 for l1 in self.s.redSemantica[doc].edges(data=True):
-                    #Guarda en variables
+                    #Store in variables
                     lista2.append( [ l1[0], l1[1]] ) #, l1[2]['label']) )# sorted([ l1[0], l1[1]])
-                    #Guarda en documento. beneficiary -> room	 [label=increase];
+                    #Store in document. beneficiary -> room	 [label=increase];
                     f.write(u" "+l1[0]+ " -> " + l1[1] + "\t[label="+ str(l1[2]['label']) +'];\n') 
                         
                     if l1[2]['label'] is None:
@@ -1290,7 +1290,7 @@ class Meme:
         
         
         f.close()
-        # Guarda las frecuencias de pares de conceptos
+        # Store the frequencies of concept pairs
         list_pares_con_frec = []
         auxList = []
         for tupla in lista2:
@@ -1309,22 +1309,22 @@ class Meme:
                 auxList.append( tupla )
             
         #------------------------------------------------------------------------------------------------------
-        #Guarda las frecuencias de cada relacion
+        #Store the frequencies of each relation
         for r in set(relaciones):
             relacion_frec.append( (r, relaciones.count( r ), set(relaciones_doc[r]) ) )
 
 
-        # Ordena por frecuencia
+        # Order by frequency
         relacion_frec = sorted(relacion_frec, reverse= True, key=lambda x: x[1])
         list_pares_con_frec = sorted(list_pares_con_frec, reverse= True, key=lambda x: x[1])
 
         doc_name = self.folder+"5.- Resultado_Final_"+self.s.nameExample+" "+str(self.s.umbralOriginal)+"%.dot"
         with io.open(doc_name, 'w', encoding='utf-8') as f:
             f.write(u'((concepto1, concepto2), frecuencia) \n\n')  
-            # Imprime las frecuencias de los pares de coneptos
+            # Write out the frequencies of the concept pairs
             for e in list_pares_con_frec:
                 f.write( u'('+str(e[0][0])+','+str(e[0][1])+') '+str(e[1])+'\n')
-            # Imprime las relaciones frecuentes
+            # Write the frequent relations
             f.write(u'\n\n(relacion, frecuencia, [docs]) \n\n') 
             for e in relacion_frec:
                 f.write( u''+str(e)+'\n')
@@ -1339,11 +1339,11 @@ class Meme:
     
     
 """
-RS_to_words = True # False True #escribir las redes semanticas a documentos .dot
+RS_to_words = True # False True #write the semantic networks to .dot documents
 print_concepts = True # False True
 print_excepts_in_meme = False # False True
-print_meme_tm_1_2 = True #Imprime los memes iguales o
-print_prob_con_dist_meme = False #Deprecated, imprime conceptos que no se econtraron en el texto (meme)
+print_meme_tm_1_2 = True #Write the memes which are the same or
+print_prob_con_dist_meme = False #Deprecated, write the concepts which were not found in the text (meme)
 print_resultados = True
 print_all_memes = True
 
@@ -1390,7 +1390,7 @@ for e in examples:
                   print_all_memes,
                   fecha)
             #except:
-                #print "Error en "+e+", con umbral ",umbral
+                #print "Error in "+e+", with threshold ",umbral
 
 """
         
